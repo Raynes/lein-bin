@@ -6,7 +6,7 @@ It basically just takes your uberjar and stuffs it in another file with some fan
 
 ## Usage
 
-This is a leiningen plugin. If you want it, do `lein plugin install lein-bin 0.1.0-alpha1`.
+This is a leiningen plugin. If you want it, do `lein plugin install lein-bin 0.1.0`.
 
 Your project needs to have a `:main` field specifying the namespace that contains your `-main` function. If you have that, just run `lein bin` and it'll produce a standalone executable for your project.
 
