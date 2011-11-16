@@ -1,6 +1,7 @@
 (ns leiningen.bin
   "Create a standalone executable for your project."
   (:use [clojure.java.io :only [copy file]]
+        [clojure.string :only [join]]
         [leiningen.jar :only [get-default-uberjar-name]]
         [leiningen.uberjar :only [uberjar]])
   (:import java.io.FileOutputStream))
@@ -12,7 +13,7 @@ Add :main to your project.clj to specify the namespace that contains your
 -main function."
   [project]
   (if (:main project)
-    (let [opts (:jvm-opts project "")
+    (let [opts (join " " (:jvm-opts project ""))
           target (file (:target-dir project))
           binfile (file target (:name project))]
       (uberjar project)
