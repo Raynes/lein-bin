@@ -6,6 +6,9 @@
         [leiningen.uberjar :only [uberjar]])
   (:import java.io.FileOutputStream))
 
+(defn- jvm-options [{:keys [jvm-opts name version] :or {jvm-opts []}}]
+  (join " " (conj jvm-opts (format "-D%s.version=%s" name version))))
+
 (defn ^{:help-arglists '([])} bin
   "Create a standalone console executable for your project.
 
@@ -13,9 +16,10 @@ Add :main to your project.clj to specify the namespace that contains your
 -main function."
   [project]
   (if (:main project)
-    (let [opts (join " " (:jvm-opts project ""))
+    (let [opts (jvm-options project)
           target (file (:target-dir project))
-          binfile (file target (:name project))]
+          binfile (file target (:or (:executable-name project)
+                                    (str (:name project) "-" (:version project))))]
       (uberjar project)
       (println "Creating standalone executable:" (.getPath binfile))
       (with-open [bin (FileOutputStream. binfile)]
