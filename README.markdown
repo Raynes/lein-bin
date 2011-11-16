@@ -8,7 +8,7 @@ It basically just takes your uberjar and stuffs it in another file with some fan
 
 This is a leiningen plugin. If you want it, do `lein plugin install lein-bin 0.1.0`.
 
-Your project needs to have a `:main` field specifying the namespace that contains your `-main` function. If you have that, just run `lein bin` and it'll produce a standalone executable for your project.
+Your project needs to have a `:main` field specifying the namespace that contains your `-main` function. If you have that, just run `lein bin` and it'll produce a standalone executable for your project. Note that your main namespace currently needs to be AOT compiled (it just needs to have `:gen-class` specified in its `ns` declaration). This requirement is no longer relevant for Clojure 1.3, so I'll fix the code to reflect that soon.
 
 ## License
 
