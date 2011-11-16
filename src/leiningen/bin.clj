@@ -1,10 +1,18 @@
 (ns leiningen.bin
   "Create a standalone executable for your project."
   (:use [clojure.java.io :only [copy file]]
-        [clojure.string :only [join]]
         [leiningen.jar :only [get-default-uberjar-name]]
         [leiningen.uberjar :only [uberjar]])
   (:import java.io.FileOutputStream))
+
+(defn- jvm-options
+  "Return final JVM options for the project"
+  [project]
+  (clojure.string/join
+   " "
+   (flatten [(:jvm-opts project)
+            (format "-D%s.version=%s"
+                    (:name project) (:version project))])))
 
 (defn ^{:help-arglists '([])} bin
   "Create a standalone console executable for your project.
@@ -13,7 +21,7 @@ Add :main to your project.clj to specify the namespace that contains your
 -main function."
   [project]
   (if (:main project)
-    (let [opts (join " " (:jvm-opts project ""))
+    (let [opts (jvm-options project)
           target (file (:target-dir project))
           binfile (file target (:name project))]
       (uberjar project)
