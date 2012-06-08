@@ -6,12 +6,16 @@ It basically just takes your uberjar and stuffs it in another file with some fan
 
 ## Usage
 
-This is a leiningen plugin. If you want it, do `lein plugin install lein-bin 0.1.0`.
+This is a leiningen plugin. If you're using lein 1, run `lein plugin install lein-bin <current-version>` to install it.
+If you're using lein 2, add the plugin to your default profile in `~/.lein/profiles.clj`.
 
-Your project needs to have a `:main` field specifying the namespace that contains your `-main` function. If you have that, just run `lein bin` and it'll produce a standalone executable for your project. Note that your main namespace currently needs to be AOT compiled (it just needs to have `:gen-class` specified in its `ns` declaration). This requirement is no longer relevant for Clojure 1.3, so I'll fix the code to reflect that soon.
+Your project needs to have a `:main` field specifying the namespace that contains your `-main` function.
+If you have that, just run `lein bin` and it'll produce a standalone executable for your project. Note that
+your main namespace currently needs to be AOT compiled (it just needs to have `:gen-class` specified in its
+`ns` declaration).
 
 ## License
 
-Copyright (C) 2011 Anthony Grimes, Justin Balthrop
+Copyright (C) 2012 Anthony Grimes, Justin Balthrop
 
 Distributed under the Eclipse Public License, the same as Clojure.
