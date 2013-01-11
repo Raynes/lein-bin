@@ -18,7 +18,7 @@ Add :main to your project.clj to specify the namespace that contains your
   (if (:main project)
     (let [opts (jvm-options project)
           target (file (:target-path project))
-          binfile (file target (:or (:executable-name project)
+          binfile (file target (or (:executable-name project)
                                     (str (:name project) "-" (:version project))))]
       (uberjar project)
       (println "Creating standalone executable:" (.getPath binfile))
