@@ -19,6 +19,13 @@ bin` and it'll produce a standalone executable for your project. Note
 that your main namespace currently needs to be AOT compiled (it just
 needs to have `:gen-class` specified in its `ns` declaration).
 
+You can also supply a `:bin` key like so:
+
+        :bin {:name "runme"
+              :bootclasspath true}
+
+  * `:name`: Name the file something other than `project-version`
+  * `:bootclasspath`: Supply the uberjar to java via `-Xbootclasspath/a` instead of `-jar`.  Sometimes this can speed up execution, but may not work with all classloaders.
 
 ## License
 
