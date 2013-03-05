@@ -25,10 +25,12 @@ You can also supply a `:bin` key like so:
               :bootclasspath true}
 
   * `:name`: Name the file something other than `project-version`
+  * `:bin-path`: Also copy the file into `bin-path`, which is presumably on you $PATH.
   * `:bootclasspath`: Supply the uberjar to java via `-Xbootclasspath/a` instead of `-jar`.  Sometimes this can speed up execution, but may not work with all classloaders.
 
 ## License
 
 Copyright (C) 2012 Anthony Grimes, Justin Balthrop
+Copyright (C) 2013 Jason Whitlark
 
 Distributed under the Eclipse Public License, the same as Clojure.
