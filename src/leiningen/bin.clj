@@ -26,6 +26,18 @@
 (defn write-boot-preamble! [out flags main]
   (.write out (.getBytes (boot-preamble flags main))))
 
+(defn- copy-bin [project binfile]
+  (if-let [bin-path (get-in project [:bin :bin-path])]
+    (let [new-bin-file (file bin-path (.getName binfile))]
+      (if (every? true? ((juxt #(.exists %)
+                               #(.canWrite %)
+                               #(.isDirectory %))
+                         (file bin-path)))
+        (do (println "Copying binary to" bin-path)
+            (copy binfile new-bin-file)
+            (.setExecutable new-bin-file true))
+        (println "Can't find, or can't write to" bin-path)))))
+
 (defn bin
   "Create a standalone console executable for your project.
 
@@ -45,5 +57,6 @@ Add :main to your project.clj to specify the namespace that contains your
           (write-boot-preamble! bin opts (:main project))
           (write-jar-preamble! bin opts))
         (copy (file (get-jar-filename project :uberjar)) bin))
-      (.setExecutable binfile true))
+      (.setExecutable binfile true)
+      (copy-bin project binfile))
     (println "Cannot create bin without :main namespace in project.clj")))
