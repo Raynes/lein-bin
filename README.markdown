@@ -32,6 +32,7 @@ You can also supply a `:bin` key like so:
 ## License
 
 Copyright (C) 2012 Anthony Grimes, Justin Balthrop
+
 Copyright (C) 2013 Jason Whitlark
 
 Distributed under the Eclipse Public License, the same as Clojure.
