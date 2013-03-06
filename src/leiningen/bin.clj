@@ -1,9 +1,10 @@
 (ns leiningen.bin
   "Create a standalone executable for your project."
-  (:use [clojure.java.io :only [copy file]]
-        [clojure.string :only [join]]
-        [leiningen.jar :only [get-jar-filename]]
-        [leiningen.uberjar :only [uberjar]])
+  (:require [clojure.string :refer [join]]
+            [leiningen.jar :refer [get-jar-filename]]
+            [leiningen.uberjar :refer [uberjar]]
+            [me.raynes.fs :as fs]
+            [clojure.java.io :as io])
   (:import java.io.FileOutputStream))
 
 (defn- jvm-options [{:keys [jvm-opts name version] :or {jvm-opts []}}]
@@ -26,17 +27,11 @@
 (defn write-boot-preamble! [out flags main]
   (.write out (.getBytes (boot-preamble flags main))))
 
-(defn- copy-bin [project binfile]
-  (if-let [bin-path (get-in project [:bin :bin-path])]
-    (let [new-bin-file (file bin-path (.getName binfile))]
-      (if (every? true? ((juxt #(.exists %)
-                               #(.canWrite %)
-                               #(.isDirectory %))
-                         (file bin-path)))
-        (do (println "Copying binary to" bin-path)
-            (copy binfile new-bin-file)
-            (.setExecutable new-bin-file true))
-        (println "Can't find, or can't write to" bin-path)))))
+(defn ^:private copy-bin [project binfile]
+  (when-let [bin-path (get-in project [:bin :bin-path])]
+    (let [new-binfile (fs/file bin-path (fs/base-name binfile))]
+      (println "Copying binary to" bin-path)
+      (fs/chmod "+x" (fs/copy+ binfile new-binfile)))))
 
 (defn bin
   "Create a standalone console executable for your project.
@@ -46,17 +41,17 @@ Add :main to your project.clj to specify the namespace that contains your
   [project]
   (if (:main project)
     (let [opts (jvm-options project)
-          target (file (:target-path project))
-          binfile (file target
-                        (or (get-in project [:bin :name])
-                            (str (:name project) "-" (:version project))))]
+          target (fs/file (:target-path project))
+          binfile (fs/file target
+                           (or (get-in project [:bin :name])
+                               (str (:name project) "-" (:version project))))]
       (uberjar project)
-      (println "Creating standalone executable:" (.getPath binfile))
+      (println "Creating standalone executable:" (str binfile))
       (with-open [bin (FileOutputStream. binfile)]
         (if (get-in project [:bin :bootclasspath])
           (write-boot-preamble! bin opts (:main project))
           (write-jar-preamble! bin opts))
-        (copy (file (get-jar-filename project :uberjar)) bin))
-      (.setExecutable binfile true)
+        (io/copy (fs/file (get-jar-filename project :uberjar)) bin))
+      (fs/chmod "+x" binfile)
       (copy-bin project binfile))
     (println "Cannot create bin without :main namespace in project.clj")))
