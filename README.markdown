@@ -22,7 +22,7 @@ needs to have `:gen-class` specified in its `ns` declaration).
 You can also supply a `:bin` key like so:
 
         :bin {:name "runme"
-              :bin-path "/home/user/bin"
+              :bin-path "~/bin"
               :bootclasspath true}
 
   * `:name`: Name the file something other than `project-version`
