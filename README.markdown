@@ -22,11 +22,11 @@ needs to have `:gen-class` specified in its `ns` declaration).
 You can also supply a `:bin` key like so:
 
         :bin {:name "runme"
-              :bin-path "/home/user/bin"
+              :bin-path "$HOME/bin"
               :bootclasspath true}
 
   * `:name`: Name the file something other than `project-version`
-  * `:bin-path`: If specified, also copy the file into `bin-path`, which is presumably on your $PATH.
+  * `:bin-path`: If specified, also copy the file into `bin-path`, which is presumably on your $PATH. Please note only `$HOME` or absolute paths are supported.
   * `:bootclasspath`: Supply the uberjar to java via `-Xbootclasspath/a` instead of `-jar`.  Sometimes this can speed up execution, but may not work with all classloaders.
 
 ## License
