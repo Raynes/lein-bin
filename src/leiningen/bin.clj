@@ -29,7 +29,11 @@
 
 (defn ^:private copy-bin [project binfile]
   (when-let [bin-path (get-in project [:bin :bin-path])]
-    (let [new-binfile (fs/file bin-path (fs/base-name binfile))]
+    (let [bin-path (clojure.string/replace
+                    bin-path
+                    "$HOME"
+                    (System/getProperty "user.home"))
+          new-binfile (fs/file bin-path (fs/base-name binfile))]
       (println "Copying binary to" bin-path)
       (fs/chmod "+x" (fs/copy+ binfile new-binfile)))))
 
