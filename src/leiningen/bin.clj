@@ -8,7 +8,7 @@
   (:import java.io.FileOutputStream))
 
 (defn- jvm-options [{:keys [jvm-opts name version] :or {jvm-opts []}}]
-  (join " " (conj jvm-opts (format "-client -D%s.version=%s" name version))))
+  (join " " (conj jvm-opts (format "-D%s.version=%s" name version))))
 
 (defn jar-preamble [flags]
   (format (str ":;exec java %s -jar $0 \"$@\"\n"
