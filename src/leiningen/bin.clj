@@ -47,14 +47,15 @@ Add :main to your project.clj to specify the namespace that contains your
           target (fs/file (:target-path project))
           binfile (fs/file target
                            (or (get-in project [:bin :name])
-                               (str (:name project) "-" (:version project))))]
-      (uberjar project)
+                               (str (:name project) "-" (:version project))))
+          jarfile (uberjar project)]
       (println "Creating standalone executable:" (str binfile))
+      (io/make-parents binfile)
       (with-open [bin (FileOutputStream. binfile)]
         (if (get-in project [:bin :bootclasspath])
           (write-boot-preamble! bin opts (:main project))
           (write-jar-preamble! bin opts))
-        (io/copy (fs/file (get-jar-filename project :uberjar)) bin))
+        (io/copy (fs/file jarfile) bin))
       (fs/chmod "+x" binfile)
       (copy-bin project binfile))
     (println "Cannot create bin without :main namespace in project.clj")))
