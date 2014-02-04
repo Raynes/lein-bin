@@ -13,13 +13,13 @@
     (join " " (distinct (conj jvm-opts client-opt (format "-D%s.version=%s" name version))))))
 
 (defn jar-preamble [flags]
-  (format (str ":;exec java %s -jar $0 \"$@\"\n"
-               "@echo off\r\njava %s -jar %%1 \"%%~f0\" %%*\r\ngoto :eof\r\n")
+  (format (str ":;exec java %s $JVM_OPTS -jar $0 \"$@\"\n"
+               "@echo off\r\njava %s %%JVM_OPTS%% -jar %%1 \"%%~f0\" %%*\r\ngoto :eof\r\n")
           flags flags))
 
 (defn boot-preamble [flags main]
-  (format (str ":;exec java %s -Xbootclasspath/a:$0 %s \"$@\"\n"
-               "@echo off\r\njava %s -Xbootclasspath/a:%%1 %s "
+  (format (str ":;exec java %s -Xbootclasspath/a:$0 $JVM_OPTS %s \"$@\"\n"
+               "@echo off\r\njava %s -Xbootclasspath/a:%%1 %%JVM_OPTS%% %s "
                "\"%%~f0\" %%*\r\ngoto :eof\r\n")
           flags main flags main))
 
