@@ -42,13 +42,13 @@
 Add :main to your project.clj to specify the namespace that contains your
 -main function."
   [project]
-  (if (:main project)
+  (if-let [main (:main project)]
     (let [opts (jvm-options project)
           target (fs/file (:target-path project))
           binfile (fs/file target
                            (or (get-in project [:bin :name])
                                (str (:name project) "-" (:version project))))
-          jarfile (uberjar project)]
+          jarfile (uberjar project main)]
       (println "Creating standalone executable:" (str binfile))
       (io/make-parents binfile)
       (with-open [bin (FileOutputStream. binfile)]
