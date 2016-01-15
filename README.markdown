@@ -23,11 +23,18 @@ You can also supply a `:bin` key like so:
 
         :bin {:name "runme"
               :bin-path "~/bin"
-              :bootclasspath true}
+              :bootclasspath true
+              :jvm-opts ["-server" "$JVM_OPTS" "-Dfile.encoding=utf-8"]}
 
   * `:name`: Name the file something other than `project-version`
-  * `:bin-path`: If specified, also copy the file into `bin-path`, which is presumably on your $PATH.
-  * `:bootclasspath`: Supply the uberjar to java via `-Xbootclasspath/a` instead of `-jar`.  Sometimes this can speed up execution, but may not work with all classloaders.
+  * `:bin-path`: If specified, also copy the file into `bin-path`,
+    which is presumably on your $PATH.
+  * `:bootclasspath`: Supply the uberjar to java via
+    `-Xbootclasspath/a` instead of `-jar`.  Sometimes this can speed
+    up execution, but may not work with all classloaders.
+  * `:jvm-opts`: If specified, supply the Java options to be used in
+    the executable jar. When present it overrides the project's
+    `:jvm-opts`. It support environment variables as well.
 
 ## License
 
