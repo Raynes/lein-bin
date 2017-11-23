@@ -33,11 +33,13 @@ You can also supply a `:bin` key like so:
   * `:bootclasspath`: Supply the uberjar to java via `-Xbootclasspath/a` instead of `-jar`.  Sometimes this can speed up execution, but may not work with all classloaders.
 
 ## Advanced Usage
-Under the hood this plugin adds a snippet of text to the beginning of your uber jar. Assuming you rewrite all the offsets in the zip file (or jar file in this case) meta data, the resulting jar file is still considered valid by the [zip file specification](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT) and as a consequence by any sane zip implementation including programs like unzip and perhaps more significantly by java itself. 
+Under the hood this plugin adds a snippet of text (the "preamble") to the beginning of your uber jar. Assuming you rewrite some internal offsets in the jar file, the resulting jar is still considered valid by the [zip file specification](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT) and as a consequence, by any sane jar/zip implementation including programs like unzip and perhaps more significantly by java itself. 
 
-So we add a snippet of text to the beginning of the uber jar, rewrite the zip meta data offsets and then make the uber jar executable. Now when you try to directly execute the uber jar, the operating system will try to run the prelude snippet of text we added to the file. If this prelude snippet is written in a way such that it is considered a valid shell/bat script on both windows and linux/osx, then we have just created ourselves a true executable jar file without the need to invoke `java -jar uber.jar`. 
+Let's repeat that to make sure we grok the idea: it's possible to add random data to the beginning of a jar file and still have the jar be valid in the eyes of java and other tools. 
 
-So to get this working we need to write a "script" which works on both windows and *nix. This is a science unto itself, but suffice to say that it is possible. The default sample script inserted looks as follows: 
+So we add a snippet of text to the beginning of the uber jar, rewrite the offsets within the uber jar, and then make the uber jar executable. Now when you try to directly execute the uber jar (as you would a normal executable file), the operating system will try to run the preamble script we added to the beginning for the jar file. If this preamble snippet is written in a way such that it is considered a valid shell/bat script on both windows and linux/osx, then we have just created ourselves a true executable and portable jar file without the need to invoke `java -jar uber.jar`. 
+
+To get this working we need to write a "script" which works on both windows and linux/osx. This is a science unto itself, but suffice to say that it is possible. The default hard coded script used by this plugin looks as follows: 
 
 ```
 :;exec java %s -jar $0 "$@"
@@ -48,6 +50,8 @@ where:
 
 * on windows machines only the second line is executed and the first one is seen as a comment
 * on *nix machines the first line is executed and since the `exec` command relinquishes control from the current process and replaces it with the `java -jar ...` one, the second line is never executed
+
+What this script does is it executes `java -jar` on itself, or rather, on the jar file the script is contained in.
 
 For advanced usage or to take advantage of startup accelerators such as [drip](https://github.com/ninjudd/drip), you can include a custom preamble script in place of the above snippet by using the `:preamble-script` key like so: 
 
@@ -68,7 +72,7 @@ java -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:-OmitStackTraceInFastThr
 goto :eof
 ```
 
-where `myapp.core` is the name of the main class of your program. 
+where `myapp.core` is the name of the main class of your program. The above only works for drip on linux/osx, mostly because at the time of writing, I did not have a windows machine to test the script on. 
 
 ## License
 
