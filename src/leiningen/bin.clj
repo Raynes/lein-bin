@@ -54,8 +54,8 @@ Add :main to your project.clj to specify the namespace that contains your
 -main function."
   [project]
   (if (:main project)
-    (let [opts (jvm-options project)
-          target (fs/file (:target-path project))
+    (let [opts    (jvm-options project)
+          target  (fs/file (:target-path project))
           binfile (fs/file target
                            (or (get-in project [:bin :name])
                                (str (:name project) "-" (:version project))))
@@ -63,9 +63,9 @@ Add :main to your project.clj to specify the namespace that contains your
       (println "Creating standalone executable:" (str binfile))
       (io/make-parents binfile)
       (with-open [bin (FileOutputStream. binfile)]
-        (condp 
+        (cond
           (get-in project [:bin :preamble-script]) (write-custom-preamble! project bin opts)
-          (get-in project [:bin :bootclasspath])   (write-boot-preamble! bin opts (:main project))
+          (get-in project [:bin :bootclasspath]) (write-boot-preamble! bin opts (:main project))
           :else (write-jar-preamble! bin opts))
         (io/copy (fs/file jarfile) bin))
       (fs/chmod "+x" binfile)
