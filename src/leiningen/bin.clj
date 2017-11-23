@@ -65,8 +65,8 @@ Add :main to your project.clj to specify the namespace that contains your
       (with-open [bin (FileOutputStream. binfile)]
         (cond
           (get-in project [:bin :preamble-script]) (write-custom-preamble! project bin opts)
-          (get-in project [:bin :bootclasspath]) (write-boot-preamble! bin opts (:main project))
-          :else (write-jar-preamble! bin opts))
+          (get-in project [:bin :bootclasspath])   (write-boot-preamble! bin opts (:main project))
+          :else                                    (write-jar-preamble! bin opts))
         (io/copy (fs/file jarfile) bin))
       (fs/chmod "+x" binfile)
       (copy-bin project binfile)
