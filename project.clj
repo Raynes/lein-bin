@@ -5,5 +5,4 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[me.raynes/fs "1.4.0"]
                  [clj-zip-meta/clj-zip-meta "0.1.1" :exclusions [org.clojure/clojure]]]
-                 ;;[org.clojure/core.incubator "0.1.4"]]
   :eval-in-leiningen true)
