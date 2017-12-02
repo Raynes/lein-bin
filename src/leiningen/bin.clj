@@ -44,7 +44,7 @@ Add :main to your project.clj to specify the namespace that contains your
   [project]
   (if (:main project)
     (let [opts (jvm-options project)
-          target (fs/file (:target-path project))
+          target (fs/file (:target project))
           binfile (fs/file target
                            (or (get-in project [:bin :name])
                                (str (:name project) "-" (:version project))))
