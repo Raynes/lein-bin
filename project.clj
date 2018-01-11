@@ -1,4 +1,4 @@
-(defproject lein-bin "0.3.5"
+(defproject lein-bin "0.3.6-SNAPSHOT"
   :description "A leiningen plugin for generating standalone console executables for your project."
   :url "https://github.com/Raynes/lein-bin"
   :license {:name "Eclipse Public License"
