@@ -4,7 +4,8 @@
             [leiningen.jar :refer [get-jar-filename]]
             [leiningen.uberjar :refer [uberjar]]
             [me.raynes.fs :as fs]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [clj-zip-meta.core :as zm])
   (:import java.io.FileOutputStream))
 
 (defn- jvm-options [{:keys [jvm-opts name version] :or {jvm-opts []}}]
@@ -29,6 +30,16 @@
 (defn write-boot-preamble! [out flags main]
   (.write out (.getBytes (boot-preamble flags main))))
 
+(defn write-custom-preamble! [project out flags]
+  (let [path (get-in project [:bin :preamble-script])
+        file (clojure.java.io/as-file path)]
+    (if (.exists file)
+      (do
+        (println "> writing custom preamble...")
+        (io/copy file out))
+      (println "> ERROR: custom preamble file" path "not found!"))))
+
+
 (defn ^:private copy-bin [project binfile]
   (when-let [bin-path (get-in project [:bin :bin-path])]
     (let [bin-path (fs/expand-home bin-path)
@@ -43,8 +54,8 @@ Add :main to your project.clj to specify the namespace that contains your
 -main function."
   [project]
   (if (:main project)
-    (let [opts (jvm-options project)
-          target (fs/file (:target-path project))
+    (let [opts    (jvm-options project)
+          target  (fs/file (:target-path project))
           binfile (fs/file target
                            (or (get-in project [:bin :name])
                                (str (:name project) "-" (:version project))))
@@ -52,10 +63,13 @@ Add :main to your project.clj to specify the namespace that contains your
       (println "Creating standalone executable:" (str binfile))
       (io/make-parents binfile)
       (with-open [bin (FileOutputStream. binfile)]
-        (if (get-in project [:bin :bootclasspath])
-          (write-boot-preamble! bin opts (:main project))
-          (write-jar-preamble! bin opts))
+        (cond
+          (get-in project [:bin :preamble-script]) (write-custom-preamble! project bin opts)
+          (get-in project [:bin :bootclasspath])   (write-boot-preamble! bin opts (:main project))
+          :else                                    (write-jar-preamble! bin opts))
         (io/copy (fs/file jarfile) bin))
       (fs/chmod "+x" binfile)
-      (copy-bin project binfile))
+      (copy-bin project binfile)
+      (println "> re-aligning zip offsets...")
+      (zm/repair-zip-with-preamble-bytes binfile))
     (println "Cannot create bin without :main namespace in project.clj")))
